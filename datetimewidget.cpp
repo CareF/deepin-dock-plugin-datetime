@@ -55,11 +55,20 @@ void DatetimeWidget::set24HourFormat(const bool value)
 QSize DatetimeWidget::sizeHint() const
 {
     QFontMetrics fm(qApp->font());
+    const Dock::Position position = qApp->property(PROP_POSITION).value<Dock::Position>();
 
-    if (m_24HourFormat)
-        return fm.boundingRect("88:88").size() + QSize(20, 10);
-    else
-        return fm.boundingRect("88:88 A.A.").size() + QSize(20, 20);
+    if (position == Dock::Top || position == Dock::Bottom) {
+        if (m_24HourFormat)
+            return fm.boundingRect("88/88 88:88").size() + QSize(20, 10);
+        else
+            return fm.boundingRect("88/88 88:88 A.A.").size() + QSize(20, 20);
+    }
+    else {
+        if (m_24HourFormat)
+            return fm.boundingRect("88/88\n88:88").size() + QSize(20, 30);
+        else
+            return fm.boundingRect("88/88\n88:88\nA.A.").size() + QSize(20, 40);
+    }
 }
 
 void DatetimeWidget::resizeEvent(QResizeEvent *e)
@@ -89,13 +98,14 @@ void DatetimeWidget::paintEvent(QPaintEvent *e)
         else
         {
             if (position == Dock::Top || position == Dock::Bottom)
-                format = "hh:mm AP";
+                format = "M/d hh:mm AP";
             else
-                format = "hh:mm\nAP";
+                format = "M/d\nhh:mm\nAP";
         }
 
         painter.setPen(Qt::white);
-        painter.drawText(rect(), Qt::AlignCenter, current.time().toString(format));
+        // painter.drawText(rect(), Qt::AlignCenter, current.time().toString(format));
+        painter.drawText(rect(), Qt::AlignCenter, current.toString(format));
         return;
     }
 
