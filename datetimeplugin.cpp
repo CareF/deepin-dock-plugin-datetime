@@ -27,6 +27,7 @@
 
 #define PLUGIN_STATE_KEY "enable"
 #define TIME_FORMAT_KEY "24HourFormat"
+#define DATE_DISPLAY_KEY "DisplayDate"
 
 DatetimePlugin::DatetimePlugin(QObject *parent)
     : QObject(parent),
@@ -62,6 +63,7 @@ void DatetimePlugin::init(PluginProxyInterface *proxyInter)
 {
     m_proxyInter = proxyInter;
     m_centralWidget->set24HourFormat(m_proxyInter->getValue(this, TIME_FORMAT_KEY, true).toBool());
+    m_centralWidget->setDisplayDate(m_proxyInter->getValue(this, DATE_DISPLAY_KEY, true).toBool());
 
     // transfer config
     QSettings settings("deepin", "dde-dock-datetime");
@@ -137,6 +139,7 @@ const QString DatetimePlugin::itemCommand(const QString &itemKey)
 const QString DatetimePlugin::itemContextMenu(const QString &itemKey)
 {
     Q_UNUSED(itemKey);
+    Dock::DisplayMode mode = displayMode();
 
     QList<QVariant> items;
     items.reserve(1);
@@ -149,6 +152,16 @@ const QString DatetimePlugin::itemContextMenu(const QString &itemKey)
         settings["itemText"] = tr("24 Hour Time");
     settings["isActive"] = true;
     items.push_back(settings);
+
+    QMap<QString, QVariant> displayDate;
+    displayDate["itemId"] = "displayDate";
+    if (m_centralWidget->displayDate())
+        displayDate["itemText"] = tr("Hide Date");
+    else
+        displayDate["itemText"] = tr("Show Date");
+    displayDate["isActive"] = (
+            mode == Dock::DisplayMode::Fashion ? false : true);
+    items.push_back(displayDate);
 
     QMap<QString, QVariant> open;
     open["itemId"] = "open";
@@ -177,10 +190,15 @@ void DatetimePlugin::invokedMenuItem(const QString &itemKey, const QString &menu
             .method(QString("ShowModule"))
             .arg(QString("datetime"))
             .call();
-    } else {
-        const bool value = m_proxyInter->getValue(this, TIME_FORMAT_KEY, true).toBool();
-        m_proxyInter->saveValue(this, TIME_FORMAT_KEY, !value);
-        m_centralWidget->set24HourFormat(!value);
+    } else if (menuId == "settings") {
+        const bool hourFormat = m_proxyInter->getValue(this, TIME_FORMAT_KEY, true).toBool();
+        m_proxyInter->saveValue(this, TIME_FORMAT_KEY, !hourFormat);
+        m_centralWidget->set24HourFormat(!hourFormat);
+
+    } else if (menuId == "displayDate") {
+        const bool dateDisplay = m_proxyInter->getValue(this, DATE_DISPLAY_KEY, true).toBool();
+        m_proxyInter->saveValue(this, DATE_DISPLAY_KEY, !dateDisplay);
+        m_centralWidget->setDisplayDate(!dateDisplay);
     }
 }
 

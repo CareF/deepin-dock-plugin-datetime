@@ -32,6 +32,7 @@ public:
     explicit DatetimeWidget(QWidget *parent = 0);
 
     bool is24HourFormat() const { return m_24HourFormat; }
+    bool displayDate() const { return m_displayDate; }
 
 signals:
     void requestUpdateGeometry() const;
@@ -39,12 +40,17 @@ signals:
 
 public slots:
     void set24HourFormat(const bool value);
+    void setDisplayDate(const bool value);
+
+protected:
+    const QString format();
 
 private:
     QSize sizeHint() const;
     void resizeEvent(QResizeEvent *e);
     void paintEvent(QPaintEvent *e);
     void mousePressEvent(QMouseEvent *e);
+    void afterSetting();
 
     const QPixmap loadSvg(const QString &fileName, const QSize size);
 
@@ -52,6 +58,7 @@ private:
     QPixmap m_cachedIcon;
     QString m_cachedTime;
     bool m_24HourFormat;
+    bool m_displayDate;
 };
 
 #endif // DATETIMEWIDGET_H

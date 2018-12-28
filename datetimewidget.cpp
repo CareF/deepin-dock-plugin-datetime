@@ -43,7 +43,20 @@ void DatetimeWidget::set24HourFormat(const bool value)
     }
 
     m_24HourFormat = value;
+    afterSetting();
+}
 
+void DatetimeWidget::setDisplayDate(const bool value)
+{
+    if(m_displayDate == value)
+        return;
+
+    m_displayDate = value;
+    afterSetting();
+}
+
+void DatetimeWidget::afterSetting()
+{
     m_cachedTime.clear();
     update();
 
@@ -78,13 +91,28 @@ void DatetimeWidget::resizeEvent(QResizeEvent *e)
     QWidget::resizeEvent(e);
 }
 
+const QString DatetimeWidget::format()
+{
+    const Dock::Position position = qApp->property(PROP_POSITION).value<Dock::Position>();
+    QString format;
+    if (m_24HourFormat)
+        format = "HH:mm";
+    else
+        format = "hh:mm AP";
+    if (m_displayDate)
+        format.insert(0, "MM/dd ");
+    if (position != Dock::Top && position != Dock::Bottom)
+        format.replace(' ', '\n');
+    
+    return format;
+}
+
 void DatetimeWidget::paintEvent(QPaintEvent *e)
 {
     Q_UNUSED(e);
 
     const auto ratio = qApp->devicePixelRatio();
     const Dock::DisplayMode displayMode = qApp->property(PROP_DISPLAY_MODE).value<Dock::DisplayMode>();
-    const Dock::Position position = qApp->property(PROP_POSITION).value<Dock::Position>();
     const QDateTime current = QDateTime::currentDateTime();
 
     QPainter painter(this);
@@ -92,20 +120,9 @@ void DatetimeWidget::paintEvent(QPaintEvent *e)
 
     if (displayMode == Dock::Efficient)
     {
-        QString format;
-        if (m_24HourFormat)
-            format = "hh:mm";
-        else
-        {
-            if (position == Dock::Top || position == Dock::Bottom)
-                format = "M/d hh:mm AP";
-            else
-                format = "M/d\nhh:mm\nAP";
-        }
-
         painter.setPen(Qt::white);
         // painter.drawText(rect(), Qt::AlignCenter, current.time().toString(format));
-        painter.drawText(rect(), Qt::AlignCenter, current.toString(format));
+        painter.drawText(rect(), Qt::AlignCenter, current.toString(format()));
         return;
     }
 
