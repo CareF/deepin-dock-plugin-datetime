@@ -20,7 +20,7 @@
  */
 
 #include "datetimewidget.h"
-#include "constants.h"
+#include "dde-dock/constants.h"
 
 #include <QApplication>
 #include <QPainter>
