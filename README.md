@@ -13,3 +13,5 @@ qmake ..
 make
 sudo make install
 ```
+
+This work is compiled under Arch Linux, with `dtkcore` providing some header files. There may be some modification needed for other distributions. See [this](https://github.com/CareF/deepin-dock-plugin-datetime/issues/1) for details. 

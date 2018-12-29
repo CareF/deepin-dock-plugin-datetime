@@ -142,7 +142,7 @@ const QString DatetimePlugin::itemContextMenu(const QString &itemKey)
     Dock::DisplayMode mode = displayMode();
 
     QList<QVariant> items;
-    items.reserve(1);
+    items.reserve(3);
 
     QMap<QString, QVariant> settings;
     settings["itemId"] = "settings";
