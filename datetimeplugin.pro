@@ -2,7 +2,7 @@ QT              += widgets svg dbus
 TEMPLATE         = lib
 CONFIG          += plugin c++11
  
-TARGET           = $$qtLibraryTarget(datetimeplugin)
+TARGET           = $$qtLibraryTarget(datetime)
 DESTDIR          = $$_PRO_FILE_PWD_
 DISTFILES       += datetime.json
 INCLUDEPATH     += /usr/include/libdtk-2.0.9/DCore
